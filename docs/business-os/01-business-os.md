@@ -86,6 +86,13 @@ Business OS развивается постепенно.
 
 Любые изменения должны оставаться совместимыми с утвержденной Business Architecture.
 
+## Technology Independence
+
+Business OS проектируется независимо от конкретной платформы.
+
+Все операционные данные организуются через Operational Repository.
+
+Конкретная технология хранения данных рассматривается как реализация Repository и может быть заменена без изменения архитектуры Business OS.
 ---
 
 # 3. Архитектура Business OS
@@ -129,3 +136,17 @@ Business OS не заменяет Business Architecture.
 Business OS остается независимой от конкретной технологии.
 
 На текущем этапе Notion рассматривается как первая платформа реализации Business OS, а не как ее архитектурная основа.
+
+# 4. Operational Repositories
+
+## 4.1 Repository Architecture
+
+Business OS организует хранение операционных данных через Operational Repository.
+
+Operational Repository — это логическое операционное хранилище, реализующее одну Business Entity.
+
+Operational Repository является архитектурной абстракцией и не зависит от конкретной технологии хранения данных.
+
+Технология хранения является реализацией Repository и может изменяться без изменения архитектуры Business OS.
+
+На текущем этапе все Operational Repository реализованы посредством баз данных Notion.
