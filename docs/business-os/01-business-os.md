@@ -138,15 +138,320 @@ Business OS остается независимой от конкретной т
 На текущем этапе Notion рассматривается как первая платформа реализации Business OS, а не как ее архитектурная основа.
 
 # 4. Operational Repositories
+Каждый Operational Repository описывается с использованием единого Repository Specification.
 
-## 4.1 Repository Architecture
+Repository Specification является обязательным архитектурным контрактом и определяет назначение, ответственность, связи и правила использования Repository независимо от технологии реализации.
+## 4.1 Архитектура репозиториев
 
-Business OS организует хранение операционных данных через Operational Repository.
+Business OS организует операционные данные через систему Operational Repository.
 
 Operational Repository — это логическое операционное хранилище, реализующее одну Business Entity.
 
-Operational Repository является архитектурной абстракцией и не зависит от конкретной технологии хранения данных.
+Repository является архитектурной абстракцией и не зависит от конкретной технологии хранения данных.
 
-Технология хранения является реализацией Repository и может изменяться без изменения архитектуры Business OS.
+Технология хранения рассматривается как реализация Repository и может быть заменена без изменения архитектуры Business OS.
 
-На текущем этапе все Operational Repository реализованы посредством баз данных Notion.
+На текущем этапе все Operational Repository реализуются с использованием баз данных Notion.
+
+Архитектурная модель состоит из трех уровней:
+
+```text
+Business Entity
+        │
+        ▼
+Operational Repository
+        │
+        ▼
+Technology Implementation
+```
+
+Каждая Business Entity имеет один и только один Operational Repository.
+
+Repository является единственным источником операционных данных для соответствующей Business Entity.
+
+---
+
+## 4.2 Принципы проектирования Repository
+
+### One Repository — One Entity
+
+Каждый Repository реализует хранение только одной Business Entity.
+
+Repository не объединяет данные нескольких сущностей.
+
+---
+
+### One Source of Truth
+
+Каждая Business Entity имеет только один Repository.
+
+Дублирование операционных данных не допускается.
+
+---
+
+### Domain Ownership
+
+Каждый Repository принадлежит одному Business Domain.
+
+Ответственность за структуру, качество и жизненный цикл Repository несет владелец соответствующего домена.
+
+---
+
+### Relation over Duplication
+
+Связи между Repository реализуются через отношения между Business Entity.
+
+Копирование данных между Repository запрещено.
+
+---
+
+### Platform Independence
+
+Repository описывает бизнес-модель хранения данных.
+
+Способ реализации Repository зависит от выбранной технологической платформы и не влияет на архитектуру Business OS.
+
+---
+
+### Evolution without Breaking Architecture
+
+Repository может развиваться.
+
+Добавление новых свойств допускается при условии сохранения совместимости с утвержденной Business Architecture.
+
+Изменение Business Entity производится только через Architecture Decision Record (ADR).
+
+---
+
+## 4.3 Классификация Repository
+
+Все Repository Business OS делятся на несколько категорий.
+
+### Master Repository
+
+Хранят основные бизнес-сущности компании.
+
+Примеры:
+
+- Clients
+- Services
+- Countries
+
+---
+
+### Operational Repository
+
+Используются для ежедневной работы компании.
+
+Примеры:
+
+- Requests
+- Cases
+- Workflows
+
+---
+
+### Transaction Repository
+
+Хранят неизменяемые события и операции.
+
+Пример:
+
+- Financial Transactions
+
+---
+
+### Knowledge Repository
+
+Используются для хранения корпоративных знаний.
+
+Примеры:
+
+- Knowledge Base
+- SOP
+- Templates
+
+Каждый Operational Repository описывается с использованием Repository Specification.
+
+Стандарт Repository Specification определяется в документе
+"02 Business OS Design Standards".
+
+## 4.4 Core Operational Repositories
+
+Operational Repository группируются по утвержденным Business Domain.
+
+Каждый Repository реализует одну Business Entity и является единственным операционным источником данных для этой сущности.
+
+### Catalog Domain
+
+Repository:
+
+- Services Repository
+- Countries Repository
+
+Назначение домена:
+
+Каталог определяет, какие услуги предоставляет компания и в каком контексте они могут быть оказаны.
+
+Catalog является источником справочных данных для остальных Business Domain.
+
+---
+
+### CRM Domain
+
+Repository:
+
+- Requests Repository
+- Clients Repository
+- Cases Repository
+
+Назначение домена:
+
+CRM отвечает за регистрацию обращений клиентов, ведение клиентской базы и управление жизненным циклом Case.
+
+CRM является точкой входа в Business OS.
+
+---
+
+### Operations Domain
+
+Repository:
+
+- Workflows Repository
+- Workflow Stages Repository
+
+Назначение домена:
+
+Operations обеспечивает выполнение услуг и управление операционной деятельностью компании.
+
+---
+
+### Finance Domain
+
+Repository:
+
+- Financial Transactions Repository
+
+Назначение домена:
+
+Finance отвечает за регистрацию всех финансовых операций компании.
+
+Financial Transaction является Append-only сущностью.
+
+---
+
+### Knowledge Domain
+
+Repository:
+
+- Knowledge Repository
+
+Назначение домена:
+
+Knowledge обеспечивает накопление корпоративного опыта, инструкций, шаблонов и знаний.
+
+Knowledge Domain развивается вместе с компанией и используется людьми, автоматизациями и AI.
+
+## 4.5 Requests Repository Specification
+
+### Назначение
+
+Requests Repository является операционным репозиторием для хранения и управления Business Entity **Request**.
+
+Repository обеспечивает регистрацию всех входящих обращений клиентов независимо от источника поступления.
+
+Request является точкой входа в Business OS.
+
+---
+
+### Business Entity
+
+Request
+
+---
+
+### Business Domain
+
+CRM
+
+---
+
+### Ответственность
+
+Requests Repository отвечает за:
+
+- регистрацию нового Request;
+- хранение исходной информации обращения;
+- фиксацию канала поступления;
+- отслеживание жизненного цикла Request;
+- передачу Request в дальнейшую обработку;
+- инициирование создания одного или нескольких Case.
+
+---
+
+### Repository Owner
+
+CRM Domain Owner
+
+---
+
+### Связанные Repository
+
+Входящие связи:
+
+- Services Repository
+- Countries Repository
+
+Исходящие связи:
+
+- Clients Repository
+- Cases Repository
+
+---
+
+### Бизнес-правила
+
+Каждый Request создается один раз.
+
+Каждый Request имеет уникальный идентификатор.
+
+Request не изменяет информацию о Client.
+
+Request может существовать без Client до момента идентификации клиента.
+
+Один Request может привести к созданию нескольких Case.
+
+После создания Case Request продолжает существовать как самостоятельная Business Entity.
+
+---
+
+### Основные операции
+
+Repository поддерживает следующие операции:
+
+- регистрация Request;
+- просмотр;
+- обновление разрешенных данных;
+- поиск;
+- фильтрация;
+- архивирование.
+
+Удаление Request не допускается.
+
+---
+
+### Текущая реализация
+
+Notion Database
+
+---
+
+### Будущие расширения
+
+В рамках текущей версии архитектуры не реализуются:
+
+- Request Participant;
+- Request Timeline;
+- Product Service.
+
+Данные возможности находятся в Architecture Backlog.
