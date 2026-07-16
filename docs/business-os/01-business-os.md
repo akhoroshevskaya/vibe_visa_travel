@@ -455,3 +455,406 @@ Notion Database
 - Product Service.
 
 Данные возможности находятся в Architecture Backlog.
+
+## 4.6 Repository Interaction Model
+
+### Назначение
+
+Business OS рассматривает Operational Repository как участников единого операционного процесса компании.
+
+Repository не являются независимыми хранилищами данных.
+
+Каждый Repository занимает строго определенное место в жизненном цикле создания ценности для клиента.
+
+Repository взаимодействуют посредством утвержденных Business Entity и их жизненного цикла.
+
+---
+
+### Принципы взаимодействия
+
+#### Sequential Flow
+
+Repository взаимодействуют в соответствии с бизнес-процессом компании.
+
+Создание следующего Repository возможно только после наступления соответствующего бизнес-события.
+
+---
+
+#### Business Lifecycle Driven
+
+Переход между Repository определяется изменением состояния Business Entity, а не техническими событиями платформы.
+
+---
+
+#### Controlled Creation
+
+Repository не создают друг друга напрямую.
+
+Создание новой Business Entity инициируется утвержденным бизнес-процессом.
+
+---
+
+#### No Direct Repository Dependency
+
+Repository не зависят друг от друга на уровне реализации.
+
+Связь существует только через утвержденную Business Architecture.
+
+---
+
+#### Traceability
+
+Business OS обеспечивает возможность проследить полный путь обработки обращения клиента от первого Request до завершения оказания услуги.
+
+---
+
+### Основной операционный поток
+
+```text
+External World
+      │
+      ▼
+Request
+      │
+      ▼
+Client
+      │
+      ▼
+Case
+      │
+      ▼
+Workflow
+      │
+      ▼
+Financial Transaction
+      │
+      ▼
+Knowledge
+```
+
+---
+
+### Repository Interaction
+
+#### Request → Client
+
+После идентификации клиента данные Request используются для создания или связывания Business Entity Client.
+
+Request остается самостоятельной Business Entity.
+
+---
+
+#### Client → Case
+
+При подтверждении необходимости оказания услуги создается один или несколько Case.
+
+Case всегда принадлежит одному Client.
+
+---
+
+#### Case → Workflow
+
+Каждый Case инициирует выполнение соответствующего Workflow.
+
+Workflow отвечает за выполнение услуги.
+
+---
+
+#### Workflow → Financial Transaction
+
+Финансовые операции регистрируются в процессе выполнения Workflow в соответствии с утвержденными бизнес-правилами.
+
+Financial Transaction является Append-only Business Entity.
+
+---
+
+#### Workflow → Knowledge
+
+После завершения Workflow Business OS может сохранить накопленные знания, шаблоны, инструкции или рекомендации в Knowledge Domain.
+
+Knowledge Repository не влияет на выполнение Workflow и используется для накопления корпоративного опыта.
+
+---
+
+### Сквозной жизненный цикл
+
+Business OS должна обеспечивать возможность проследить полную цепочку обработки обращения.
+
+```text
+Request
+    │
+    ▼
+Client
+    │
+    ▼
+Case
+    │
+    ▼
+Workflow
+    │
+    ▼
+Financial Transaction
+```
+
+Каждый этап связан с предыдущим через утвержденные Business Entity.
+
+---
+
+### Архитектурные ограничения
+
+Business OS запрещает:
+
+- создание Repository вне утвержденных Business Domain;
+- создание Repository без соответствующей Business Entity;
+- обход утвержденного жизненного цикла Business Entity;
+- дублирование ответственности между Repository;
+- нарушение принципа One Source of Truth.
+
+Любые изменения последовательности взаимодействия Repository требуют изменения Business Architecture и оформляются через ADR.
+
+## 4.7 Clients Repository Specification
+
+### Назначение
+
+Clients Repository является операционным репозиторием для хранения и управления Business Entity **Client**.
+
+Repository представляет клиента как долгосрочную сущность Business OS независимо от количества Request и Case.
+
+---
+
+### Business Entity
+
+Client
+
+---
+
+### Business Domain
+
+CRM
+
+---
+
+### Ответственность
+
+Clients Repository отвечает за:
+
+- хранение карточки клиента;
+- идентификацию клиента;
+- предотвращение дублирования клиентов;
+- связь клиента со всеми Request;
+- связь клиента со всеми Case;
+- предоставление единого представления клиента компании.
+
+---
+
+### Repository Owner
+
+CRM Domain Owner
+
+---
+
+### Связанные Repository
+
+Входящие:
+
+- Requests Repository
+
+Исходящие:
+
+- Cases Repository
+
+---
+
+### Бизнес-правила
+
+Client создается один раз.
+
+Один Client может иметь множество Request.
+
+Один Client может иметь множество Case.
+
+Client существует независимо от конкретного Request.
+
+Удаление Client не допускается.
+
+---
+
+### Основные операции
+
+- создание;
+- идентификация;
+- объединение дубликатов;
+- обновление данных;
+- поиск;
+- архивирование.
+
+---
+
+### Текущая реализация
+
+Notion Database
+
+## 4.8 Cases Repository Specification
+
+### Назначение
+
+Cases Repository является операционным репозиторием для хранения и управления Business Entity **Case**.
+
+Case представляет конкретное обязательство компании по оказанию услуги клиенту.
+
+---
+
+### Business Entity
+
+Case
+
+---
+
+### Business Domain
+
+CRM
+
+---
+
+### Ответственность
+
+Cases Repository отвечает за:
+
+- регистрацию нового Case;
+- связь Case с Client;
+- связь Case с Request;
+- определение оказываемой услуги;
+- передачу Case в Operations Domain;
+- контроль жизненного цикла Case.
+
+---
+
+### Repository Owner
+
+CRM Domain Owner
+
+---
+
+### Связанные Repository
+
+Входящие:
+
+- Requests Repository
+- Clients Repository
+- Services Repository
+
+Исходящие:
+
+- Workflows Repository
+
+---
+
+### Бизнес-правила
+
+Каждый Case принадлежит одному Client.
+
+Каждый Case создается на основании Request.
+
+Один Request может создать несколько Case.
+
+Case может существовать только при наличии Client.
+
+Case не хранит операционные действия выполнения услуги.
+
+За выполнение отвечает Workflow.
+
+---
+
+### Основные операции
+
+- создание;
+- изменение статуса;
+- назначение Workflow;
+- поиск;
+- архивирование.
+
+---
+
+### Текущая реализация
+
+Notion Database
+
+## 4.9 Workflows Repository Specification
+
+### Назначение
+
+Workflows Repository является операционным репозиторием для хранения и управления Business Entity **Workflow**.
+
+Repository обеспечивает выполнение услуги в соответствии с утвержденным бизнес-процессом.
+
+---
+
+### Business Entity
+
+Workflow
+
+---
+
+### Business Domain
+
+Operations
+
+---
+
+### Ответственность
+
+Workflows Repository отвечает за:
+
+- выполнение услуги;
+- управление этапами Workflow;
+- контроль выполнения;
+- фиксацию результата;
+- передачу информации в Finance и Knowledge Domain.
+
+---
+
+### Repository Owner
+
+Operations Domain Owner
+
+---
+
+### Связанные Repository
+
+Входящие:
+
+- Cases Repository
+
+Исходящие:
+
+- Workflow Stages Repository
+- Financial Transactions Repository
+- Knowledge Repository
+
+---
+
+### Бизнес-правила
+
+Каждый Workflow принадлежит одному Case.
+
+Workflow описывает процесс оказания услуги.
+
+Workflow состоит из одного или нескольких Workflow Stage.
+
+Workflow завершается после выполнения услуги.
+
+---
+
+### Основные операции
+
+- запуск;
+- изменение этапов;
+- завершение;
+- приостановка;
+- поиск.
+
+---
+
+### Текущая реализация
+
+Notion Database
