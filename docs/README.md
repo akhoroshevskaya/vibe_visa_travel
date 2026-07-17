@@ -75,21 +75,19 @@ Engineering
 
 Статус документа: **In Progress**
 
-### Progress
+Stage 2
+──────────────
+✅ 1. Business OS
+⏳ 2. Repository Property Usage
+⬜ 3. Views
+⬜ 4. Templates
+⬜ 5. Automations
+⬜ 6. Dashboards
+⬜ 7. AI Components
+⬜ 8. Permissions
+⬜ 9. Navigation
+⬜ 10. Implementation Mapping
 
-- 🟢 Part 1 — Foundation
-- 🟢 Part 2 — Operational Repository Architecture
-- 🟢 Part 3 — Core Operational Repositories
-- 🟢 Part 4 — Requests Repository Specification
-
-Следующие разделы:
-
-- 🔴 Clients Repository Specification
-- 🔴 Cases Repository Specification
-- 🔴 Workflows Repository Specification
-- 🔴 Workflow Stages Repository Specification
-- 🔴 Financial Transactions Repository Specification
-- 🔴 Knowledge Repository Specification
 
 Планируемые разделы:
 
