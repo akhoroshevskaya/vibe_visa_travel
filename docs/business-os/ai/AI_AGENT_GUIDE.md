@@ -414,3 +414,16 @@ Mode: Architecture Review
    - Medium
    - Low
 6. Не предлагай исправлений.
+
+# Mandatory Architecture Review Process
+
+Before performing any repository analysis, every AI agent MUST:
+
+1. Read `architecture/governance/00-document-hierarchy.md`.
+2. Determine the architectural level of every document involved.
+3. Determine the Source of Truth for the analyzed architectural aspect.
+4. Apply Priority Rules defined in `architecture/governance/00-document-hierarchy.md`.
+5. Compare documents only when comparison is valid according to the document hierarchy.
+6. If document authority cannot be determined, report **Unknown Authority** instead of an architecture conflict.
+
+Failure to follow this process may produce false-positive architecture findings.
